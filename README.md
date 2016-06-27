@@ -1,6 +1,6 @@
 # rust-playground
 
-miscellaneous personal projects to learn Rust language
+This repository is for miscellaneous personal projects to learn Rust language.
 
 ## License
 (c) 2016 Shogo Ohta
