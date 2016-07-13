@@ -1,7 +1,3 @@
-pub const BOARD_HEIGHT: isize = 8;
-pub const BOARD_WIDTH: isize = 8;
-pub const BOARD_SIZE: usize = (BOARD_HEIGHT * BOARD_HEIGHT) as usize;
-
 #[derive(Copy,Clone,PartialEq)]
 pub enum Square {
     Black,
@@ -9,22 +5,32 @@ pub enum Square {
     Empty
 }
 
-pub type Board = [Square; BOARD_SIZE];
+pub struct Board {
+    board: Vec<Square>,
+    size: isize
+}
+
+pub fn new(size: usize) -> Board {
+    Board {
+        board: vec![Square::Empty; size * size],
+        size: size as isize
+    }
+}
 
 pub fn get_at(board: &Board, y: isize, x: isize) -> Square {
-    board[(BOARD_WIDTH * y + x) as usize]
+    board.board[(board.size * y + x) as usize]
 }
 
 pub fn put_at(board: &mut Board, y: isize, x: isize, s: Square) {
-    board[(BOARD_WIDTH * y + x) as usize] = s;
+    board.board[(board.size * y + x) as usize] = s;
 }
 
 pub fn print_board(board: &Board) {
     println!("  1 2 3 4 5 6 7 8");
     println!(" +-+-+-+-+-+-+-+-+");
-    for y in 0..BOARD_HEIGHT {
+    for y in 0..board.size {
         print!("{}|", y + 1);
-        for x in 0..BOARD_WIDTH {
+        for x in 0..board.size {
             match get_at(board, y, x) {
                 Square::Black => print!("o"),
                 Square::White => print!("x"),
@@ -38,10 +44,10 @@ pub fn print_board(board: &Board) {
 }
 
 pub fn init_board(board: &mut Board) {
-    for y in 0..BOARD_HEIGHT {
-        for x in 0..BOARD_WIDTH {
-            let dy = y - BOARD_HEIGHT/2 + 1;
-            let dx = x - BOARD_WIDTH/2 + 1;
+    for y in 0..board.size {
+        for x in 0..board.size {
+            let dy = y - board.size/2 + 1;
+            let dx = x - board.size/2 + 1;
             let s = match (dy, dx) {
                 (0, 0) => Square::Black,
                 (0, 1) => Square::White,
@@ -55,7 +61,7 @@ pub fn init_board(board: &mut Board) {
 }
 
 fn safe_get_at(board: &Board, y: isize, x: isize) -> Option<Square> {
-    if y < 0 || BOARD_HEIGHT <= y || x < 0 || BOARD_WIDTH <= x {
+    if y < 0 || board.size <= y || x < 0 || board.size <= x {
         None
     } else {
         Some(get_at(board, y, x))
@@ -102,8 +108,8 @@ pub fn flip(board: &mut Board, s: Square, disks: &[(isize,isize)]) {
 }
 
 pub fn has_available_pos(board: &Board, s: Square) -> bool {
-    for y in 0..BOARD_HEIGHT {
-        for x in 0..BOARD_WIDTH {
+    for y in 0..board.size {
+        for x in 0..board.size {
             if get_at(board, y, x) == Square::Empty
             && !flippable_disks(board, y, x, s).is_empty() {
                 return true;

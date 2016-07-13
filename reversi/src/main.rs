@@ -63,7 +63,7 @@ fn main_loop(board: &mut Board, turn: Square) {
 }
 
 fn main() {
-    let ref mut board = [Square::Empty; board::BOARD_SIZE];
+    let ref mut board = board::new(8);
     board::init_board(board);
 
     main_loop(board, Square::Black);
