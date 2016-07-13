@@ -1,3 +1,7 @@
+extern crate itertools;
+
+use self::itertools::Product;
+
 #[derive(Copy,Clone,PartialEq)]
 pub enum Square {
     Black,
@@ -31,37 +35,41 @@ impl Board {
         self.board[(self.size * y + x) as usize] = s;
     }
 
+    pub fn all_squares(&self) -> Vec<Pos> {
+        Product::new(0..self.size, 0..self.size).collect()
+    }
+
     pub fn init(&mut self) {
-        for y in 0..self.size {
-            for x in 0..self.size {
-                let dy = y - self.size/2 + 1;
-                let dx = x - self.size/2 + 1;
-                let s = match (dy, dx) {
-                    (0, 0) => Square::Black,
-                    (0, 1) => Square::White,
-                    (1, 0) => Square::White,
-                    (1, 1) => Square::Black,
-                    (_, _) => Square::Empty
-                };
-                self.put_at(&(y, x), s);
-            }
+        for pos in self.all_squares() {
+            let (y, x) = pos;
+            let dy = y - self.size/2 + 1;
+            let dx = x - self.size/2 + 1;
+            let s = match (dy, dx) {
+                (0, 0) => Square::Black,
+                (0, 1) => Square::White,
+                (1, 0) => Square::White,
+                (1, 1) => Square::Black,
+                (_, _) => Square::Empty
+            };
+            self.put_at(&pos, s);
         }
     }
 
     pub fn print(&self) {
         println!("  1 2 3 4 5 6 7 8");
         println!(" +-+-+-+-+-+-+-+-+");
-        for y in 0..self.size {
-            print!("{}|", y + 1);
-            for x in 0..self.size {
-                match self.get_at(&(y, x)) {
-                    Square::Black => print!("o"),
-                    Square::White => print!("x"),
-                    Square::Empty => print!(" ")
-                }
-                print!("|");
+        for pos in self.all_squares() {
+            let (y, x) = pos;
+            if x == 0 { print!("{}|", y + 1); }
+
+            match self.get_at(&pos) {
+                Square::Black => print!("o"),
+                Square::White => print!("x"),
+                Square::Empty => print!(" ")
             }
-            print!("\n");
+            print!("|");
+
+            if x == self.size - 1 { print!("\n"); }
         }
         println!(" +-+-+-+-+-+-+-+-+");
     }
@@ -115,12 +123,10 @@ impl Board {
     }
 
     pub fn has_available_pos(&self, s: Square) -> bool {
-        for y in 0..self.size {
-            for x in 0..self.size {
-                if self.get_at(&(y, x)) == Square::Empty
-                    && !self.flippable_poses(&(y, x), s).is_empty() {
-                        return true;
-                    }
+        for pos in self.all_squares() {
+            if self.get_at(&pos) == Square::Empty
+            && !self.flippable_poses(&pos, s).is_empty() {
+                return true;
             }
         }
         return false;
