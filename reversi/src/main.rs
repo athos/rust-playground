@@ -1,7 +1,6 @@
 extern crate reversi;
 
-use reversi::board::Square;
-use reversi::board::Board;
+use reversi::board::{Square,Board};
 
 use std::io;
 use std::io::Write;
