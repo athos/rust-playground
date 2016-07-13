@@ -1,6 +1,5 @@
 extern crate reversi;
 
-use reversi::board;
 use reversi::board::Square;
 use reversi::board::Board;
 
@@ -30,10 +29,10 @@ fn main_loop(board: &mut Board, turn: Square) {
     loop {
         if !passed {
             print!("\n");
-            board::print_board(board);
+            board.print();
         }
 
-        if !board::has_available_pos(board, turn) {
+        if !board.has_available_pos(turn) {
             if passed {
                 println!("Game over\n");
                 return;
@@ -50,10 +49,10 @@ fn main_loop(board: &mut Board, turn: Square) {
         io::stdout().flush();
 
         let (y, x) = read_in_pos();
-        let disks = board::flippable_disks(board, y, x, turn);
+        let disks = board.flippable_disks(y, x, turn);
         if !disks.is_empty() {
-            board::put_at(board, y, x, turn);
-            board::flip(board, turn, &disks);
+            board.put_at(y, x, turn);
+            board.flip(turn, &disks);
 
             turn = next_turn(turn);
         } else {
@@ -63,8 +62,8 @@ fn main_loop(board: &mut Board, turn: Square) {
 }
 
 fn main() {
-    let ref mut board = board::new(8);
-    board::init_board(board);
+    let ref mut board = Board::new(8);
+    board.init();
 
     main_loop(board, Square::Black);
 }
