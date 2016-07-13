@@ -1,12 +1,12 @@
 extern crate reversi;
 
-use reversi::board::{Square,Board};
+use reversi::board::{Square,Pos,Board};
 
 use std::io;
 use std::io::Write;
 use std::str::FromStr;
 
-fn read_in_pos() -> (isize, isize) {
+fn read_in_pos() -> Pos {
     let mut line = String::new();
     io::stdin().read_line(&mut line);
 
@@ -47,11 +47,11 @@ fn main_loop(board: &mut Board, turn: Square) {
         print!("\n{}'s turn> ", s);
         io::stdout().flush();
 
-        let (y, x) = read_in_pos();
-        let disks = board.flippable_disks(y, x, turn);
-        if !disks.is_empty() {
-            board.put_at(y, x, turn);
-            board.flip(turn, &disks);
+        let pos = read_in_pos();
+        let poses = board.flippable_poses(&pos, turn);
+        if !poses.is_empty() {
+            board.put_at(&pos, turn);
+            board.flip(turn, &poses);
 
             turn = next_turn(turn);
         } else {
